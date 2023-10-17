@@ -17,6 +17,7 @@
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  boot.supportedFilesystems = [ "ntfs" ];
 
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -74,7 +75,11 @@
   };
 
   # Enable touchpad support (enabled default in most desktopManager).
-  # services.xserver.libinput.enable = true;
+  # services.xserver.libinput.enable = true;i
+
+  
+  # default shell
+  programs.fish.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.n00b = {
@@ -83,89 +88,134 @@
     extraGroups = [ "networkmanager" "wheel" ];
     shell = pkgs.fish;
     packages = with pkgs; [
+      spotify
       obsidian
       vscode
       google-chrome
+      cypress
     ];
   };
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
   
+  # garabage collection
+  nix.gc.automatic = true;
+  nix.gc.dates = "6:00";
+  
   # List packages installed in system profile. To search, run:
   # $ nix search wget
-  environment.systemPackages = with pkgs; [
+  environment.systemPackages = [
   
     # system packages
-    wget
-    flatpak
-    git
-    gnumake
+    pkgs.wget
+    pkgs.flatpak
+    pkgs.git
+    pkgs.gnumake
     # home-manager
-    coreutils-full
+    pkgs.coreutils-full
+    pkgs.ntfs3g
 
     # desktop
-    gnome.gnome-tweaks
-    papirus-icon-theme
-    papirus-folders
+    pkgs.gnome.gnome-tweaks
+    pkgs.papirus-icon-theme
+    pkgs.papirus-folders
+    pkgs.volantes-cursors
 
     # fonts
-    nerdfonts
-    noto-fonts
-    noto-fonts-emoji
-    noto-fonts-cjk-sans
-    noto-fonts-cjk-serif
+    pkgs.nerdfonts
+    pkgs.noto-fonts
+    pkgs.noto-fonts-emoji
+    pkgs.noto-fonts-cjk-sans
+    pkgs.noto-fonts-cjk-serif
 
     # programming languages etc
-    gcc
-    go
-    nodejs
-    bun
-    rustup
-    dart
-    flutter
-    python311
-    python311Packages.pip
+    pkgs.gcc
+    pkgs.go
+    pkgs.nodejs_16
+    pkgs.bun
+    pkgs.rustup
+    pkgs.dart
+    pkgs.flutter
+    pkgs.python311
+    pkgs.python311Packages.pip
+    pkgs.jdk11
 
     # LSP, formatting etc.
-    nil                      # nix
-    gopls                    # go lsp
-    gofumpt                  # go formatter
-    goimports-reviser        # go imports
-    golines                  # go lines formatting
-    gomodifytags             # go modify tags in template literals
-    delve                    # go debugger
-    rust-analyzer            # rust lsp
-    nodePackages_latest.svelte-language-server
-    nodePackages_latest.volar
+    pkgs.nil                      # nix
+    pkgs.gopls                    # go lsp
+    pkgs.gofumpt                  # go formatter
+    pkgs.goimports-reviser        # go imports
+    pkgs.golines                  # go lines formatting
+    pkgs.gomodifytags             # go modify tags in template literals
+    pkgs.delve                    # go debugger
+    pkgs.rust-analyzer            # rust lsp
+    pkgs.nodePackages_latest.svelte-language-server
+    pkgs.nodePackages_latest.volar
     
     
 
     # tools
-    blackbox-terminal
-    kitty
-    gh
-    btop
-    ripgrep
+    pkgs.blackbox-terminal
+    pkgs.kitty
+    pkgs.gh
+    pkgs.btop
+    pkgs.ripgrep
+    pkgs.gparted
     
     # text editors
-    neovim
-    helix
+    pkgs.neovim
+    pkgs.helix
 
     # work, productivity etc
-    firefox
-    onlyoffice-bin
-    
+    pkgs.firefox
+    pkgs.onlyoffice-bin
+
+    # TODO remove me
+    # cypress deps
+    pkgs.xorg.libXScrnSaver
+    pkgs.xorg.libXdamage
+    pkgs.xorg.libX11
+    pkgs.xorg.libxcb
+    pkgs.xorg.libXcomposite
+    pkgs.xorg.libXi
+    pkgs.xorg.libXext
+    pkgs.xorg.libXfixes
+    pkgs.xorg.libXcursor
+    pkgs.xorg.libXrender
+    pkgs.xorg.libXrandr
+    pkgs.mesa
+    pkgs.cups
+    pkgs.expat
+    pkgs.ffmpeg
+    pkgs.libdrm
+    pkgs.libxkbcommon
+    pkgs.at-spi2-atk
+    pkgs.at-spi2-core
+    pkgs.dbus
+    pkgs.gdk-pixbuf
+    pkgs.gtk3
+    pkgs.cairo
+    pkgs.pango
+    pkgs.xorg.xauth
+    pkgs.glib
+    pkgs.nspr
+    pkgs.atk
+    pkgs.nss
+    pkgs.gtk2
+    pkgs.alsaLib
+    pkgs.gnome2.GConf
+    pkgs.unzip
+    pkgs.libudev-zero
+    # Needed to compile some of the node_modules dependencies from source
+    pkgs.autoreconfHook
+    pkgs.autoPatchelfHook
+
   ];
 
-
-  # default shell
-  programs.fish.enable = true;
-
-  # garabage collection
-  nix.gc.automatic = true;
-  nix.gc.dates = "6:00";
-
+  nixpkgs.config.permittedInsecurePackages = [
+    "nodejs-16.20.2"
+  ];
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -193,5 +243,4 @@
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "23.05"; # Did you read the comment?
-
 }
